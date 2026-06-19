@@ -2,7 +2,7 @@ from pathlib import Path
 import faiss
 import numpy as np
 
-from app.RAG.embedder import get_embedding
+from app.rag.embedder import get_embedding
 
 
 DATA_DIR = Path("data")
