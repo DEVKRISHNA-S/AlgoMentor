@@ -12,6 +12,7 @@ st.set_page_config(
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+
 with st.sidebar:
 
     st.title("AlgoMentor")
@@ -19,34 +20,59 @@ with st.sidebar:
     mode = st.radio(
         "Choose Mode",
         [
-            "chat",
-            "problem Solver",
-            "code Review"
+            "Chat",
+            "Problem Solver",
+            "Code Review"
         ]
     )
 
+    st.divider()
+
+    if st.button("Clear Chat"):
+        st.session_state.messages = []
+        st.rerun()
+
+
+# Dynamic UI based on mode
+if mode == "Problem Solver":
+    input_label = "Paste LeetCode / Codeforces Problem"
+    button_text = "Analyze Problem"
+
+elif mode == "Code Review":
+    input_label = "Paste Your Code"
+    button_text = "Review Code"
+
+else:
+    input_label = "Ask a DSA Question"
+    button_text = "Ask Mentor"
+
+
 st.title("AlgoMentor")
+
+st.header(mode)
 
 st.write(
     "Learn DSA through guided hints, code reviews, and problem-solving."
 )
 
-# Display previous messages
+
+# Display conversation history
 for message in st.session_state.messages:
 
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+
 question = st.text_area(
-    "Your Question",
-    height=150
+    input_label,
+    height=250
 )
 
-if st.button("Ask Mentor"):
+
+if st.button(button_text):
 
     if question:
 
-        # Store user message
         st.session_state.messages.append(
             {
                 "role": "user",
@@ -61,7 +87,6 @@ if st.button("Ask Mentor"):
                 mode
             )
 
-        # Store assistant message
         st.session_state.messages.append(
             {
                 "role": "assistant",
@@ -69,6 +94,4 @@ if st.button("Ask Mentor"):
             }
         )
 
-        # Display latest answer
-        with st.chat_message("assistant"):
-            st.markdown(answer)
+        st.rerun()
