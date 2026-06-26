@@ -1,7 +1,12 @@
 # app/main.py
 
 import streamlit as st
-from llm.ollama_client import ask_model
+
+from ui.sidebar import render_sidebar
+from ui.chat import render_chat
+from ui.problem_solver import render_problem_solver
+from ui.code_review import render_code_review
+from ui.knowledge_base import render_knowledge_base
 
 
 st.set_page_config(
@@ -13,85 +18,25 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 
-with st.sidebar:
-
-    st.title("AlgoMentor")
-
-    mode = st.radio(
-        "Choose Mode",
-        [
-            "Chat",
-            "Problem Solver",
-            "Code Review"
-        ]
-    )
-
-    st.divider()
-
-    if st.button("Clear Chat"):
-        st.session_state.messages = []
-        st.rerun()
-
-
-# Dynamic UI based on mode
-if mode == "Problem Solver":
-    input_label = "Paste LeetCode / Codeforces Problem"
-    button_text = "Analyze Problem"
-
-elif mode == "Code Review":
-    input_label = "Paste Your Code"
-    button_text = "Review Code"
-
-else:
-    input_label = "Ask a DSA Question"
-    button_text = "Ask Mentor"
-
+mode = render_sidebar()
 
 st.title("AlgoMentor")
-
-st.header(mode)
 
 st.write(
     "Learn DSA through guided hints, code reviews, and problem-solving."
 )
 
 
-# Display conversation history
-for message in st.session_state.messages:
-
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
 
 
-question = st.text_area(
-    input_label,
-    height=250
-)
+if mode == "Chat":
+    render_chat()
 
+elif mode == "Problem Solver":
+    render_problem_solver()
 
-if st.button(button_text):
+elif mode == "Code Review":
+    render_code_review()
 
-    if question:
-
-        st.session_state.messages.append(
-            {
-                "role": "user",
-                "content": question
-            }
-        )
-
-        with st.spinner("Thinking..."):
-
-            answer = ask_model(
-                st.session_state.messages,
-                mode
-            )
-
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": answer
-            }
-        )
-
-        st.rerun()
+elif mode == "Knowledge Base":
+    render_knowledge_base()
